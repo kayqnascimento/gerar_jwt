@@ -1,0 +1,11 @@
+{
+  "name": "gerar_jwt",
+  "version": "1.0.0",
+  "description": "Microsserviço teste para JWT para requisitar access_token da Unico",
+  "main": "index.js",
+  "scripts": {
+    "test": "console.log(\"Olá, Mundo! Meu primeiro projeto Node.js está rodando.\");"
+  },
+  "author": "",
+  "license": "ISC"
+}
