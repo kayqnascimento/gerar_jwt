@@ -1,10 +1,14 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-const app = express();
-const port = 3000;
+const express = require('express');
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const bodyParser = require('body-parser');
 
-// Chave privada para testes (substitua pela sua)
-const privateKey = `-----BEGIN PRIVATE KEY-----
+const app = express();
+app.use(bodyParser.json());
+
+// Configurações
+const PRIVATE_KEY_PATH = `-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCoaTeFlxpgC+CA
 xpgEyNVNHFU+PbL8br/RIsl/itJtGX5z1gt/II3lMMTlUU5EdhuDl+2WdvtrBFKA
 EI+5V7E/ushQfpjgsBwMRvDw1tsmjGCg0K/p8BWbUrz1RXkQRqprKHDp3/LEcB8f
@@ -32,28 +36,49 @@ wI3iT7YKrse2iiYxU3NbvYbS8ofzg+CqXsUjz9yRIQKBgQChQIC/Oi+lheENI6Bj
 AKt8hn2dqw2WIliirsBzZ9yH2JEphLyml4AtbFJEtmUR4t+s9G5LoNuQZZtQD3Qa
 UW9W7uBHUj7PAOeLWrfqvPaudQ==
 -----END PRIVATE KEY-----`;
+const BACKEND_TOKEN_URL = 'https://identityhomolog.acesso.io/oauth2/token';
+const AUDIENCE = 'https://identityhomolog.acesso.io';
+const SCOPE = '*'; // ajuste conforme necessário
 
-app.get("/generate", (req, res) => {
-    const now = Math.floor(Date.now() / 1000);
+// Carrega a chave privada
+const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, 'utf8');
 
-    // Payload com scope e exp de 1 hora
-    const payload = {
-        iss: "qista_hml@ea320cc0-1cf5-49f5-a140-3dc7fad2f31f.iam.acesso.io",           // issuer
-        aud: "https://identityhomolog.acesso.io", // audience
-        iat: now,
-        exp: now + 3600,                // expira em 1 hora
-        scope: "*"             // substituindo sub
-    };
-
+// Endpoint para gerar access_token
+app.get('/generate-access-token', async (req, res) => {
     try {
-        const token = jwt.sign(payload, privateKey, { algorithm: "RS256" });
-        res.send(token);
+        // Monta payload do JWT
+        const payload = {
+            aud: AUDIENCE,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 3600,
+            scope: SCOPE
+        };
+
+        // Gera JWT
+        const token = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+
+        // Monta body x-www-form-urlencoded
+        const params = new URLSearchParams();
+        params.append('grant_type', 'urn:ietf:params:oauth:grant-type:jwt-bearer');
+        params.append('assertion', token);
+
+        // Requisita access_token
+        const response = await axios.post(BACKEND_TOKEN_URL, params.toString(), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+
+        // Retorna access_token
+        res.json({ access_token: response.data.access_token });
     } catch (err) {
-        console.error("Erro ao gerar JWT:", err);
-        res.status(500).send("Erro ao gerar JWT");
+        console.error(err.response ? err.response.data : err.message);
+        res.status(500).json({ error: 'Falha ao gerar access_token', details: err.response ? err.response.data : err.message });
     }
 });
 
-app.listen(port, () => {
-    console.log(`JWT service rodando em http://localhost:${port}`);
+// Inicia servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Microsserviço rodando na porta ${PORT}`);
 });
