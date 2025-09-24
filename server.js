@@ -41,10 +41,11 @@ const AUDIENCE = 'https://identityhomolog.acesso.io';
 const SCOPE = '*'; // ajuste conforme necessário
 
 // Endpoint para gerar access_token
-app.get('/generate-access-token', async (req, res) => {
+app.post('/generate-access-token', async (req, res) => {
     try {
         // Monta payload do JWT
         const payload = {
+            iss: "qista_hml@ea320cc0-1cf5-49f5-a140-3dc7fad2f31f.iam.acesso.io",
             aud: AUDIENCE,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 3600,
