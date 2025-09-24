@@ -40,9 +40,6 @@ const BACKEND_TOKEN_URL = 'https://identityhomolog.acesso.io/oauth2/token';
 const AUDIENCE = 'https://identityhomolog.acesso.io';
 const SCOPE = '*'; // ajuste conforme necessário
 
-// Carrega a chave privada
-const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, 'utf8');
-
 // Endpoint para gerar access_token
 app.get('/generate-access-token', async (req, res) => {
     try {
@@ -55,7 +52,7 @@ app.get('/generate-access-token', async (req, res) => {
         };
 
         // Gera JWT
-        const token = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+        const token = jwt.sign(payload, PRIVATE_KEY_PATH, { algorithm: 'RS256' });
 
         // Monta body x-www-form-urlencoded
         const params = new URLSearchParams();
