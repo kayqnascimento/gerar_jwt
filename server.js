@@ -49,7 +49,7 @@ app.post('/generate-access-token', async (req, res) => {
             aud: AUDIENCE,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 3600,
-            scope: SCOPE
+            scope: "*"
         };
 
         // Gera JWT
