@@ -52,6 +52,9 @@ app.post('/generate-access-token', async (req, res) => {
             scope: "*"
         };
 
+        app.use(express.json()); // já deve estar no microsserviço
+
+
         // Gera JWT
         const token = jwt.sign(payload, PRIVATE_KEY_PATH, { algorithm: 'RS256' });
 
