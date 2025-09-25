@@ -5,9 +5,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express');
-
-const fs = require('fs');
-const express = require('express');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const qs = require('qs');
