@@ -12,7 +12,7 @@ const qs = require('qs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.post('/gerar-token-unico', async (req, res) => {
+app.get('/gerar-token-unico', async (req, res) => {
     const logPrefix = '[LOG Token]';
     const errorPrefix = '[ERRO Token]';
     console.log(`${logPrefix} Requisição recebida.`);
