@@ -82,7 +82,7 @@ async function getUnicoAccessToken() {
         const serviceAccount = process.env.UNICO_SERVICE_ACCOUNT;
         const tenant = process.env.UNICO_TENANT;
         const audience = process.env.UNICO_AUDIENCE;
-        const privateKeyPath = '/etc/secrets/unico_private.key';
+        const privateKeyPath = '/etc/secrets/qista_hml_3f2f4d4f-6aaa-4e6e-b5a4-2a28b9580177.key.pem';
         
         let privateKey;
         if (fs.existsSync(privateKeyPath)) {
